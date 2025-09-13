@@ -18,8 +18,9 @@ namespace ForgetMeNot.Controllers
 
         [HttpGet]
         public string GenerateJwtToken()
-        {      
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SigningKey"]));
+        {
+            var secretKey = Encoding.UTF8.GetBytes(_config["Jwt:SigningKey"]!);
+            var key = new SymmetricSecurityKey(secretKey);
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

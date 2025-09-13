@@ -18,7 +18,8 @@ if (builder.Environment.IsProduction())
     builder.Configuration["Jwt:SigningKey"] = secret.Value;
 }
 
-var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]!));
+var secretKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]!);
+var signingKey = new SymmetricSecurityKey(secretKey);
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
