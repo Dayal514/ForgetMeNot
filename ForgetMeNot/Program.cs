@@ -20,11 +20,17 @@ var builder = WebApplication.CreateBuilder(args);
 //    builder.Configuration["Jwt:SigningKey"] = secret.Value;
 //}
 
-var secretKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]!);
-var signingKey = new SymmetricSecurityKey(secretKey);
+var signingKeyValue = builder.Configuration["Jwt:SigningKey"];
+if (string.IsNullOrWhiteSpace(signingKeyValue))
+{
+    throw new InvalidOperationException("Missing configuration: Jwt:SigningKey");
+}
+
+var signingKeyByteArray = Encoding.UTF8.GetBytes(signingKeyValue);
+var signingKey = new SymmetricSecurityKey(signingKeyByteArray);
 
 // JWT Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer((Action<JwtBearerOptions>)(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -42,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
         ValidateLifetime = true,
     };
-});
+}));
 builder.Services.AddAuthorization();
 
 
@@ -99,6 +105,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
