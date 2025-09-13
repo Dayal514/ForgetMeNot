@@ -53,7 +53,14 @@ builder.Services.AddAuthorization();
 
 
 // EF Core
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    sql => sql.EnableRetryOnFailure (
+        maxRetryCount: 5,
+        maxRetryDelay: TimeSpan.FromSeconds(10),
+        errorNumbersToAdd: null
+    )
+));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -98,11 +105,26 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Run migrations on startup
-using (var scope = app.Services.CreateScope())
+// Try up to 3 times to deploy the SQL migrations
+for (int i = 0; i < 3; i++)
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
+    try
+    {
+        // Run migrations on startup
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await db.Database.MigrateAsync();
+        }
+    }
+    catch (Exception ex) when (i < 3)
+    {
+        // log exceptions
+        Console.Error.WriteLine($"Migrate attempt {i} filed: {ex.Message}. Retrying...");
+
+        // wait 5/10/15 seconds to try again
+        await Task.Delay(TimeSpan.FromSeconds(i * 5));
+    }
 }
 
 app.UseHttpsRedirection();
