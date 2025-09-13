@@ -1,4 +1,4 @@
-﻿using ForgetMeNot.Models;
+﻿using ForgetMeNot.Models.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ForgetMeNot.Data

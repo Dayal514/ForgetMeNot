@@ -1,4 +1,4 @@
-﻿namespace ForgetMeNot.Models
+﻿namespace ForgetMeNot.Models.DataModels
 {
     public class User
     {

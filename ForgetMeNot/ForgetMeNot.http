@@ -1,6 +1,0 @@
-@ForgetMeNot_HostAddress = http://localhost:5209
-
-GET {{ForgetMeNot_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

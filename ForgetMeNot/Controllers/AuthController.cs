@@ -1,6 +1,7 @@
 ﻿using ForgetMeNot.Data;
 using ForgetMeNot.Libraries;
 using ForgetMeNot.Models;
+using ForgetMeNot.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
