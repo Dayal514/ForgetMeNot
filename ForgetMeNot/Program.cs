@@ -12,13 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 // Prod secret setup
-if (builder.Environment.IsProduction())
-{
-    var kvUri = new Uri(builder.Configuration["KeyVault:Uri"]!);
-    var client = new SecretClient(kvUri, new DefaultAzureCredential());
-    KeyVaultSecret secret = await client.GetSecretAsync("JwtSigningKey");
-    builder.Configuration["Jwt:SigningKey"] = secret.Value;
-}
+//if (builder.Environment.IsProduction())
+//{
+//    var kvUri = new Uri(builder.Configuration["KeyVault:Uri"]!);
+//    var client = new SecretClient(kvUri, new DefaultAzureCredential());
+//    KeyVaultSecret secret = await client.GetSecretAsync("JwtSigningKey");
+//    builder.Configuration["Jwt:SigningKey"] = secret.Value;
+//}
 
 var secretKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]!);
 var signingKey = new SymmetricSecurityKey(secretKey);
